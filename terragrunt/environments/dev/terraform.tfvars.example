@@ -1,0 +1,102 @@
+# ============================================================================
+# EXEMPLE DE VARIABLES TERRAFORM - ENVIRONNEMENT DEV
+# Copiez ce fichier vers terraform.tfvars et adaptez les valeurs
+# ============================================================================
+
+# ========== CONFIGURATION DE BASE ==========
+# Nom de l'application (utilisé pour nommer les ressources)
+app_name = "MySecureApp"
+
+# Région Azure pour le déploiement
+location = "westeurope"
+
+# Environnement de déploiement
+environment = "dev"
+
+# ========== CONFIGURATION STORAGE ==========
+# Tier du Storage Account (Standard ou Premium)
+storage_account_tier = "Standard"
+
+# Type de réplication (LRS pour dev, GRS/GZRS pour prod)
+storage_replication_type = "LRS"
+
+# Activer Data Lake Gen2 (requis pour ABAC avancé)
+enable_hierarchical_namespace = true
+
+# ========== CONFIGURATION KEY VAULT ==========
+# SKU du Key Vault (standard ou premium)
+key_vault_sku = "standard"
+
+# ========== CONFIGURATION MONITORING ==========
+# Rétention des logs en jours (30-730)
+log_retention_days = 30
+
+# Activer les alertes Azure Monitor
+enable_alerting = false
+
+# ========== CONFIGURATION RÉSEAU ==========
+# Activer les Private Endpoints (recommandé pour prod)
+enable_private_endpoints = false
+
+# ID du Virtual Network (si Private Endpoints activés)
+# virtual_network_id = "/subscriptions/YOUR-SUBSCRIPTION-ID/resourceGroups/YOUR-RG/providers/Microsoft.Network/virtualNetworks/YOUR-VNET"
+
+# ID du Subnet (si Private Endpoints activés)
+# subnet_id = "/subscriptions/YOUR-SUBSCRIPTION-ID/resourceGroups/YOUR-RG/providers/Microsoft.Network/virtualNetworks/YOUR-VNET/subnets/YOUR-SUBNET"
+
+# Adresses IP autorisées (pour environnements restrictifs)
+allowed_ip_addresses = [
+  # "203.0.113.0/24",    # Exemple : Réseau corporate
+  # "198.51.100.0/24"    # Exemple : VPN clients
+]
+
+# Subnets autorisés (pour environnements restrictifs)
+allowed_subnet_ids = [
+  # "/subscriptions/YOUR-SUBSCRIPTION-ID/resourceGroups/YOUR-RG/providers/Microsoft.Network/virtualNetworks/YOUR-VNET/subnets/YOUR-SUBNET"
+]
+
+# ========== CONFIGURATION ABAC ==========
+# Restrictions temporelles pour les conditions ABAC
+abac_time_restrictions = {
+  start_hour = 0   # Heure de début (0-23)
+  end_hour   = 23  # Heure de fin (0-23)
+}
+
+# ========== TAGS PERSONNALISÉS ==========
+# Tags supplémentaires à appliquer aux ressources
+tags = {
+  Owner       = "Platform Team"
+  CostCenter  = "IT"
+  Compliance  = "GDPR"
+  Project     = "RBAC-ABAC-Demo"
+  Environment = "dev"
+}
+
+# ============================================================================
+# NOTES D'UTILISATION
+# ============================================================================
+
+# 1. Copiez ce fichier vers terraform.tfvars :
+#    cp terraform.tfvars.example terraform.tfvars
+
+# 2. Adaptez les valeurs selon votre environnement
+
+# 3. Pour la production, utilisez des valeurs plus restrictives :
+#    - storage_replication_type = "GZRS"
+#    - enable_private_endpoints = true
+#    - allowed_ip_addresses avec votre réseau corporate
+#    - log_retention_days = 365
+
+# 4. Les variables sensibles (IDs, secrets) doivent être passées via :
+#    - Variables d'environnement : TF_VAR_variable_name
+#    - Azure Key Vault references
+#    - Terragrunt inputs depuis des sources sécurisées
+
+# ============================================================================
+# SÉCURITÉ
+# ============================================================================
+
+# ⚠️  IMPORTANT : Ce fichier ne doit PAS contenir de secrets !
+# ✅  Utilisez des variables d'environnement pour les valeurs sensibles
+# ✅  Utilisez Azure Key Vault pour les secrets en production
+# ✅  Vérifiez que terraform.tfvars est dans .gitignore
